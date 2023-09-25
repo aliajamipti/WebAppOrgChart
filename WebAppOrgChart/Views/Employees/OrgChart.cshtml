@@ -1,0 +1,144 @@
+﻿@model List<Employee>
+
+<head>
+    <link href="~/css/orgchart.css" rel="stylesheet" />
+
+</head>
+  
+
+@{
+    ViewData["Title"] = "Organization Chart";
+   
+}
+<script>
+    const employees = @Html.Raw(Json.Serialize(Model));
+</script>
+
+
+    <div class="container">
+        <h1 class="text-center mt-4">Organization Chart</h1>
+        <div class="chart-container" id="chartContainer">
+            <!-- Organization chart will be generated here -->
+        </div>
+    </div>
+
+<div class="container">
+    <h1 class="text-center mt-4">Organization Chart with D3.js</h1>
+    <svg width="900" height="800"></svg>
+</div>
+
+@section Scripts {
+   
+ 
+     <script src="~/js/orgchart.js"></script>
+
+     <script>
+           
+
+            const root = d3.stratify()
+            .id(d => d.employeeId)
+            .parentId(d => d.parentId)(employees);
+
+            const treeLayout = d3.tree().size([800, 500]);
+
+            const nodes = treeLayout(root).descendants();
+            const links = treeLayout(root).links();
+
+            const svg = d3.select('svg');
+
+            const g = svg.append('g')
+                .attr('transform', 'translate(50, 50)');
+
+            const link = g.selectAll('.link')
+                .data(links)
+                .enter().append('path')
+                .attr('class', 'link')
+                .attr('d', d3.linkVertical()
+                    .x(d => d.x)
+                    .y(d => d.y)
+                );
+
+            const node = g.selectAll('.node')
+                .data(nodes)
+                .enter().append('g')
+                .attr('class', 'node')
+                .attr('transform', d => `translate(${d.x},${d.y})`)
+               // .attr('r' , item => { console.log('attr 1' + item) ; })
+            .on('click',function(d,item)  {
+
+               // console.log(item.data.name);
+              //  console.log(nodes[0].data.name);
+                if (item && item.data.name) {
+                    alert(`Node Name: ${item.data.name}`);
+                } else {
+                    alert('Node Name not available.');
+                }       
+              });
+
+              /////////////////////////////Rectangle
+
+                  //make the rectangle
+        var rectangle = node.append("rect")
+                                .attr("width",80)
+                               .attr("height",40);
+
+
+
+              //////////////////////////////////
+            node.append('circle')
+                .attr('r', 10);
+
+            node.append('text')
+                .attr('dy', '.35em')
+                .attr('y', d => (d.children || d._children) ? -20 : 20)
+                .style('text-anchor', 'middle')  
+                .attr('fill', 'black')
+            .text(d => `${d.data.name} (${d.data.employeeId})`)
+            .on('mouseover', (d, item) => {
+               // this.attr('fill', 'orange');
+               // item.attr('fill', 'red');
+                    });
+
+        
+
+            //change location of nodes
+      /*  node.select("circle")
+            .transition()
+            .duration(2000)
+            .delay(1000)
+            .attr("fill", "red")
+            .attr('cx', 30);*/
+
+        //change location of nodes
+        
+        d3.select("svg")
+            .transition()
+            .duration(2000)
+            .delay(1000)
+            .style("background-color", "gray");
+
+
+        d3.selectAll('circle').on('mouseover', function () {
+            d3.select(this).attr('r', '20')
+            .attr('fill', 'orange');                 
+
+        }).on('mouseout', function () {
+            d3.select(this).attr('r', '10')
+                .attr('fill', 'navy');;
+        });
+
+
+        d3.selectAll('text').on('mouseover', function () {
+            d3.select(this).style('font-size', '20px');
+        }).on('mouseout', function () {
+            d3.select(this).style('font-size', '14px');
+        });
+
+
+
+
+    </script>
+  
+
+ }
+

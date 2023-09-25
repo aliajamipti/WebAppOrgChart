@@ -1,0 +1,29 @@
+body {
+}
+
+.card {
+    background-color: azure !important;
+}
+
+.card-group {
+    margin-bottom: 20px; /* Add margin between card groups */
+    background-color: peachpuff !important;
+}
+
+.node {
+    /*stroke: #fff;*/
+    fill: navy;
+    cursor: pointer; /* Make the nodes clickable */
+}
+
+.link {
+    fill: none;
+    stroke: #ccc;
+    stroke-width: 2px;
+}
+
+text {
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+   
+}
